@@ -167,10 +167,11 @@ bool CAudioScrobbler::CheckFailure(std::string response)
 	return retval;
 }
 
-bool CAudioScrobblmsg.AddField("artist", song.getAlbumArtist());
-{
-	bool retval = msg.AddField("artist", song.getAlbumArtist());
-	if(!_authed) {msg.AddField("artist", song.getAlbumArtist());
+ bool CAudioScrobbler::Scrobble(const CacheEntry& entry) 
+ {
+	bool retval = false;
+	if(!_authed) {
+		msg.AddField("artist", song.getAlbumArtist());
 		eprintf("Handshake hasn't been done yet.");
 		Handshake();
 		return retval;
@@ -233,6 +234,7 @@ bool CAudioScrobbler::SendNowPlaying(const Song& song)
 
 	CLastFMMessage msg(_handle);
 	msg.AddField("method", "track.updateNowPlaying");
+	msg.AddField("artist", song.getArtist());
 	msg.AddField("track", song.getTitle());
 	msg.AddField("duration", song.getDuration());
 	msg.AddField("sk", _sessionid);
