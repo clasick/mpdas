@@ -93,7 +93,6 @@ std::string CAudioScrobbler::CreateScrobbleMessage(int index, const CacheEntry& 
 
 	CLastFMMessage msg(_handle);
 	msg.AddField("method", "track.Scrobble");
-	msg.AddField("artist", song.getArtist());
 	msg.AddField("track", song.getTitle());
 	msg.AddField("duration", song.getDuration());
 	msg.AddField("timestamp", entry.getStartTime());
@@ -105,7 +104,11 @@ std::string CAudioScrobbler::CreateScrobbleMessage(int index, const CacheEntry& 
 	}
 
 	if(!song.getAlbumArtist().empty()) {
+		msg.AddField("artist", song.getAlbumArtist());
 		msg.AddField("albumArtist", song.getAlbumArtist());
+	}
+	else {
+		msg.AddField("artist", song.getArtist());
 	}
 
 	return msg.GetMessage();
@@ -164,14 +167,15 @@ bool CAudioScrobbler::CheckFailure(std::string response)
 	return retval;
 }
 
-bool CAudioScrobbler::Scrobble(const CacheEntry& entry)
+bool CAudioScrobblmsg.AddField("artist", song.getAlbumArtist());
 {
-	bool retval = false;
-	if(!_authed) {
+	bool retval = msg.AddField("artist", song.getAlbumArtist());
+	if(!_authed) {msg.AddField("artist", song.getAlbumArtist());
 		eprintf("Handshake hasn't been done yet.");
 		Handshake();
 		return retval;
 	}
+
 	iprintf("Scrobbling: %s - %s", entry.getSong().getArtist().c_str(), entry.getSong().getTitle().c_str());
 
 	OpenURL(GetServiceURL(), CreateScrobbleMessage(0, entry).c_str());
@@ -195,10 +199,17 @@ bool CAudioScrobbler::LoveTrack(const Song& song, bool unlove)
 
 	CLastFMMessage msg(_handle);
 	msg.AddField("method", unlove ? "track.unlove" : "track.love");
-	msg.AddField("artist", song.getArtist());
 	msg.AddField("track", song.getTitle());
 	msg.AddField("api_key", APIKEY);
 	msg.AddField("sk", _sessionid);
+
+	if(!song.getAlbumArtist.empty()) {
+		msg.AddField("artist", song.getAlbumArtist());
+		msg.AddField("albumArtist", song.getAlbumArtist());
+	}
+	else {
+		msg.AddField("artist", song.getArtist());
+	}
 
 	OpenURL(GetServiceURL(), msg.GetMessage().c_str());
 
@@ -222,7 +233,6 @@ bool CAudioScrobbler::SendNowPlaying(const Song& song)
 
 	CLastFMMessage msg(_handle);
 	msg.AddField("method", "track.updateNowPlaying");
-	msg.AddField("artist", song.getArtist());
 	msg.AddField("track", song.getTitle());
 	msg.AddField("duration", song.getDuration());
 	msg.AddField("sk", _sessionid);
@@ -232,8 +242,12 @@ bool CAudioScrobbler::SendNowPlaying(const Song& song)
 		msg.AddField("album", song.getAlbum());
 	}
 
-	if(!song.getAlbumArtist().empty()) {
+	if(!song.getAlbumArtist.empty()) {
+		msg.AddField("artist", song.getAlbumArtist());
 		msg.AddField("albumArtist", song.getAlbumArtist());
+	}
+	else {
+		msg.AddField("artist", song.getArtist());
 	}
 
 	OpenURL(GetServiceURL(), msg.GetMessage().c_str());
